@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +45,18 @@ public class DummyControllerTest {
 	// save 함수 -> id를 전달하지 않으면 insert,
 	// id를 전달하면 해당 id에 대한 데이터가 있으면 update,
 	// id를 전달하면 해당 id에 대한 데이터가 없으면 insert!!
+	
+	@DeleteMapping("/dummy/user/{id}")
+	public String deleteUser(@PathVariable int id) {
+		try {
+			userRepository.deleteById(id);
+		}catch (Exception e) {
+			return "해당 하는 id가 없습니다. id : "+id;
+		}
+		
+		return id+"번 id 회원 삭제에 성공했습니다.";
+	}
+	
 	
 	@Transactional // 함수 종료 시에 자동 commit이 됌.
 	@PutMapping("/dummy/user/{id}")
