@@ -3,6 +3,8 @@ package com.vividswan.blog.test;
 import java.util.List;
 import java.util.function.Supplier;
 
+import javax.transaction.Transactional;
+
 import org.dom4j.IllegalAddException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vividswan.blog.model.RoleType;
@@ -34,8 +38,28 @@ public class DummyControllerTest {
 	public List<User> pageList(@PageableDefault(size = 2, sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
 		Page<User> page = userRepository.findAll(pageable) ;
 		List<User> users = page.getContent();
-		
 		return users;
+	}
+	
+	// save 함수 -> id를 전달하지 않으면 insert,
+	// id를 전달하면 해당 id에 대한 데이터가 있으면 update,
+	// id를 전달하면 해당 id에 대한 데이터가 없으면 insert!!
+	
+	@Transactional // 함수 종료 시에 자동 commit이 됌.
+	@PutMapping("/dummy/user/{id}")
+	public User updateUser(@PathVariable int id, @RequestBody User requestUser) {
+		// @RequestBody => json 데이터를 요청 => Java Object(MessageConverter의 Jackson이 변환해서 받아줌)
+		User user = userRepository.findById(id).orElseThrow(() -> {
+			return new IllegalArgumentException("해당 ID의 user가 존재하지 않습니다. id : "+id);
+		});
+		
+		user.setPassword(requestUser.getPassword());
+		user.setEmail(requestUser.getEmail());
+		
+		// userRepository.save(user); 
+		// @Transactional 추가!! -> 더티 체킹(save를 안해도 update가 된다.)
+		return user;
+		
 	}
 	
 	// {id} -> 파라미터로 전달
