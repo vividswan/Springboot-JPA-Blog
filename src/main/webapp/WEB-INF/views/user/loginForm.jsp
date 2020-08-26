@@ -11,10 +11,6 @@
     <input type="text" class="form-control" placeholder="Enter UserName" id="username">
   </div>
   <div class="form-group">
-    <label for="email">Email address:</label>
-    <input type="email" class="form-control" placeholder="Enter email" id="email">
-  </div>
-  <div class="form-group">
     <label for="password">Password:</label>
     <input type="password" class="form-control" placeholder="Enter password" id="password">
   </div>
@@ -23,8 +19,8 @@
       <input class="form-check-input" type="checkbox"> Remember me
     </label>
   </div>
-  <button type="submit" class="btn btn-primary">회원가입</button>
 </form>
+ <button id="btn-login" class="btn btn-primary">로그인</button>
 
 </div>
 
