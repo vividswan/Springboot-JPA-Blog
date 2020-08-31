@@ -41,6 +41,16 @@ public class BoardService {
 		boardRepository.deleteById(id);
 	}
 	
+	@Transactional
+	public void updateBoard(int id, Board requestBoard) {
+		Board board = boardRepository.findById(id)
+				.orElseThrow(()->{
+					return new IllegalArgumentException("해당 하는 번호의 게시물이 없습니다.");
+				});
+		board.setTitle(requestBoard.getTitle());
+		board.setContent(requestBoard.getContent());
+	}
+	
 //	@Transactional(readOnly = true) // Select할 때 트랜잭션 시작, 서비스 종료시에 트랜잭션 종료 (정합성)
 //	public User login(User user) {
 //		return userRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword());
