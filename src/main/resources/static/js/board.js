@@ -6,6 +6,9 @@ let index = {
     $("#btn-delete").on("click", () => {
       this.deleteById();
     });
+    $("#btn-update").on("click", () => {
+      this.update();
+    });
   },
   save: function () {
     let data = {
@@ -33,6 +36,26 @@ let index = {
       url: "/api/delete/" + id,
     }).done(function (response) {
       alert('글 삭제가 완료되었습니다.');
+      location.href = "/";
+    }).fail(function (error) {
+      alert(JSON.stringify(error));
+    });
+  },
+  update: function () {
+    let id = $("#id").val();
+    console.log(id);
+    let data = {
+      title: $("#title").val(),
+      content: $("#content").val(),
+    };
+
+    $.ajax({
+      type: "PUT",
+      url: "/api/putProc/" + id,
+      data: JSON.stringify(data),
+      contentType: "application/json; charset=utf-8",
+    }).done(function (response) {
+      alert('글 수정이 완료되었습니다.');
       location.href = "/";
     }).fail(function (error) {
       alert(JSON.stringify(error));
