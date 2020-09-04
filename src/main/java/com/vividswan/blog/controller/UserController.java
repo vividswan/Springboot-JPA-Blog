@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vividswan.blog.model.OAuthToken;
+
 @Controller
 public class UserController {
 	
@@ -56,6 +61,33 @@ public class UserController {
 				String.class
 		);
 		
-		return "카카오 토큰 요청 완료 : 토큰 요청에 대한 응답 : " +response;
+		// Gson, Json Simple, ObjectMapper 들이 있음
+		ObjectMapper objectMapper = new ObjectMapper();
+		OAuthToken oAuthToken = null;
+		try {
+			oAuthToken = objectMapper.readValue(response.getBody(), OAuthToken.class);
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		
+		RestTemplate rt2 = new RestTemplate();
+		HttpHeaders  headers2 = new HttpHeaders();
+		headers2.add("Authorization", "Bearer "+ oAuthToken.getAccess_token());
+		headers2.add("Content-type","application/x-www-form-urlencoded;charset=utf-8");
+		
+		HttpEntity<MultiValueMap<String, String>>	kakaoProfileRequest = new HttpEntity<>(headers2);
+		
+		ResponseEntity<String> response2 = rt2.exchange(
+				"https://kapi.kakao.com/v2/user/me",
+				HttpMethod	.POST,
+				kakaoProfileRequest,
+				String.class
+		);
+				
+		
+		return "카카오 토큰 요청 완료 : 토큰 요청에 대한 응답 : " +response2.getBody();
 	}
 }
