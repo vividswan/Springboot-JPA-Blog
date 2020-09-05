@@ -42,8 +42,9 @@ public class User {
 	@Column(nullable = false, length = 50)
 	private String email;
 	
-	// @ColumnDefault("'user'") // 양 옆으로 작은 따옴표를 줘서 문자라는 것을 알려줘야함
+	private String oauth; // kakao, google .. 
 	
+	// @ColumnDefault("'user'") // 양 옆으로 작은 따옴표를 줘서 문자라는 것을 알려줘야함
 	@Enumerated(EnumType.STRING) // 해당 enum이 String이라고 알려줌
 	private RoleType role; // Enum을 쓰는게 좋다. // admin, user, manager -> 도메인(프로그래밍에서 도메인은 범위를 의미)
 	
