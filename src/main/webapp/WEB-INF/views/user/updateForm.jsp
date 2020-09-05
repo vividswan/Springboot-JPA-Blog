@@ -11,13 +11,17 @@
     <label for="username">UserName:</label>
     <input value = "${principal.user.username}"type="text" class="form-control" placeholder="Enter UserName" id="username" readonly>
   </div>
-  <div class="form-group">
+  
+  <c:if test="${empty principal.user.oauth}">
+    <div class="form-group">
     <label for="password">Password:</label>
     <input type="password" class="form-control"  id="password">
   </div>
+  </c:if>
+  
    <div class="form-group">
     <label for="email">Email address:</label>
-    <input value = "${principal.user.email}" type="email" class="form-control" id="email">
+    <input value = "${principal.user.email}" type="email" class="form-control" id="email" readonly>
   </div>
 </form>
   <button id="btn-update" class="btn btn-primary">정보 수정</button>
