@@ -4,10 +4,15 @@ import java.util.UUID;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -26,8 +31,14 @@ import com.vividswan.blog.service.UserService;
 @Controller
 public class UserController {
 	
+	@Value("${vivid.key}")
+	private String vividKey;
+			
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
 	
 	@GetMapping("/auth/joinForm")
 	public String joinForm() {
@@ -45,7 +56,7 @@ public class UserController {
 	}
 	
 	@GetMapping("/auth/kakao/callback")
-	public@ResponseBody String kakaoCallback(String code) { // Data를 리턴해주는 컨트롤러 함수
+	public String kakaoCallback(String code) { // Data를 리턴해주는 컨트롤러 함수
 		// POST 방식으로 key=value 데이터를 요청 (카카오쪽으로)
 		
 		RestTemplate rt = new RestTemplate();
@@ -100,22 +111,29 @@ public class UserController {
 		ObjectMapper objectMapper2 = new ObjectMapper();
 		KakaoProfile kakaoProfile = null;
 		try {
-			kakaoProfile = objectMapper.readValue(response2.getBody(), KakaoProfile.class);
+			kakaoProfile = objectMapper2.readValue(response2.getBody(), KakaoProfile.class);
 		} catch (JsonMappingException e) {
 			e.printStackTrace();
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
 		
-		UUID garbagePassword = UUID.randomUUID();
-		User user = User.builder()
+		//UUID garbagePassword = UUID.randomUUID();
+		User kakaoUser = User.builder()
 				.username(kakaoProfile.getKakao_account().getEmail()+"_"+kakaoProfile.getId())
-				.password(garbagePassword.toString())
+				.password(vividKey)
 				.email(kakaoProfile.getKakao_account().getEmail())
+				.oauth("kakao")
 				.build();
 		
-		userService.saveUser(user);
+		User originUser = userService.findUser(kakaoUser.getUsername());
+		if(originUser.getUsername()==null) {
+			userService.saveUser(kakaoUser);
+		}
 		
-		return "회원가입 완료";
+		Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(kakaoUser.getUsername(), kakaoUser.getPassword()));
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		
+		return "redirect:/";
 	}
 }
