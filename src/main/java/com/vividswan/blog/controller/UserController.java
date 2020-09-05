@@ -1,5 +1,9 @@
 package com.vividswan.blog.controller;
 
+import java.util.UUID;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,10 +18,16 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vividswan.blog.model.KakaoProfile;
 import com.vividswan.blog.model.OAuthToken;
+import com.vividswan.blog.model.User;
+import com.vividswan.blog.service.UserService;
 
 @Controller
 public class UserController {
+	
+	@Autowired
+	private UserService userService;
 	
 	@GetMapping("/auth/joinForm")
 	public String joinForm() {
@@ -86,8 +96,26 @@ public class UserController {
 				kakaoProfileRequest,
 				String.class
 		);
-				
 		
-		return "카카오 토큰 요청 완료 : 토큰 요청에 대한 응답 : " +response2.getBody();
+		ObjectMapper objectMapper2 = new ObjectMapper();
+		KakaoProfile kakaoProfile = null;
+		try {
+			kakaoProfile = objectMapper.readValue(response2.getBody(), KakaoProfile.class);
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		UUID garbagePassword = UUID.randomUUID();
+		User user = User.builder()
+				.username(kakaoProfile.getKakao_account().getEmail()+"_"+kakaoProfile.getId())
+				.password(garbagePassword.toString())
+				.email(kakaoProfile.getKakao_account().getEmail())
+				.build();
+		
+		userService.saveUser(user);
+		
+		return "회원가입 완료";
 	}
 }
