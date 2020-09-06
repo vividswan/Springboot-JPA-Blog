@@ -6,14 +6,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.vividswan.blog.dto.ReplySaveDto;
 import com.vividswan.blog.model.Board;
 import com.vividswan.blog.model.Reply;
 import com.vividswan.blog.model.User;
 import com.vividswan.blog.repository.BoardRepository;
 import com.vividswan.blog.repository.ReplyRepository;
+import com.vividswan.blog.repository.UserRepository;
 
 @Service
 public class BoardService {
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	@Autowired
 	private BoardRepository boardRepository;
@@ -57,12 +62,15 @@ public class BoardService {
 	}
 
 	@Transactional
-	public void saveReply(User user, Reply reply, int boardId) {
-		Board board = boardRepository.findById(boardId).orElseThrow(()->{
+	public void saveReply(ReplySaveDto replySaveDto) {
+		User user = userRepository.findById(replySaveDto.getUserId()).orElseThrow(()->{
+			return new IllegalArgumentException("댓글 작성 실패 : 일치하는 유저가 없습니다.");
+		});
+		Board board = boardRepository.findById(replySaveDto.getBoardId()).orElseThrow(()->{
 			return new IllegalArgumentException("댓글 작성 실패 : 일치하는 게시판이 없습니다.");
 		});
-		reply.setBoard(board);
-		reply.setUser(user);
+		String content=replySaveDto.getContent();
+		Reply reply = new Reply(user,board,content);
 		replyRepository.save(reply);
 	}
 	
