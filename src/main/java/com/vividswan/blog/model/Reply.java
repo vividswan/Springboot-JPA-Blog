@@ -41,4 +41,10 @@ public class Reply {
 	
 	@CreationTimestamp
 	private Timestamp createDate;
+	
+	public Reply(User user, Board board, String content) {
+		this.user = user;
+		this.board = board;
+		this.content = content;
+	}
 }
