@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -46,6 +47,7 @@ public class Board {
 	
 	@OneToMany(mappedBy = "board", fetch = FetchType.EAGER) // mappedBy-> 연관관계의 주인이 아니므로, DB에 FK키를 만들지 말라는 의미, EAGER 전략 -> 무조건 가져오기
 	@JsonIgnoreProperties({"board"})
+	@OrderBy("id desc")
 	private List<Reply> replys;
 	
 	@ManyToOne // Many = Board, One = User
