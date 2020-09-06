@@ -14,8 +14,10 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,7 +45,8 @@ public class Board {
 	private int count; // 조회수
 	
 	@OneToMany(mappedBy = "board", fetch = FetchType.EAGER) // mappedBy-> 연관관계의 주인이 아니므로, DB에 FK키를 만들지 말라는 의미, EAGER 전략 -> 무조건 가져오기
-	private List<Reply> reply;
+	@JsonIgnoreProperties({"board"})
+	private List<Reply> replys;
 	
 	@ManyToOne // Many = Board, One = User
 	@JoinColumn(name = "userId")
