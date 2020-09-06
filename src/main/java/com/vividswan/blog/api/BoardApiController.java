@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vividswan.blog.config.auth.PrincipalDetail;
+import com.vividswan.blog.dto.ReplySaveDto;
 import com.vividswan.blog.dto.ResponseDto;
 import com.vividswan.blog.model.Board;
 import com.vividswan.blog.model.Reply;
@@ -42,10 +43,10 @@ public class BoardApiController {
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
 	
+	// 데이터를 받을 때 컨트롤러에서 dto를 만들어서 받는게 좋다.
 	@PostMapping("/api/board/{id}/reply")
-	public ResponseDto<Integer> SaveReply(@PathVariable int id, @RequestBody Reply reply, @AuthenticationPrincipal PrincipalDetail principal){
-		User user = principal.getUser();
-		boardService.saveReply(user, reply, id);
+	public ResponseDto<Integer> SaveReply(@RequestBody ReplySaveDto replySaveDto){
+		boardService.saveReply(replySaveDto);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
 }
