@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vividswan.blog.config.auth.PrincipalDetail;
 import com.vividswan.blog.dto.ResponseDto;
 import com.vividswan.blog.model.Board;
+import com.vividswan.blog.model.Reply;
+import com.vividswan.blog.model.User;
 import com.vividswan.blog.service.BoardService;
 
 @RestController
@@ -40,4 +42,10 @@ public class BoardApiController {
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
 	
+	@PostMapping("/api/board/{id}/reply")
+	public ResponseDto<Integer> SaveReply(@PathVariable int id, @RequestBody Reply reply, @AuthenticationPrincipal PrincipalDetail principal){
+		User user = principal.getUser();
+		boardService.saveReply(user, reply, id);
+		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
+	}
 }
