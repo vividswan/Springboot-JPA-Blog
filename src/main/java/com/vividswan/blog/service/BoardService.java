@@ -63,6 +63,8 @@ public class BoardService {
 
 	@Transactional
 	public void saveReply(ReplySaveDto replySaveDto) {
+		
+		/*
 		User user = userRepository.findById(replySaveDto.getUserId()).orElseThrow(()->{
 			return new IllegalArgumentException("댓글 작성 실패 : 일치하는 유저가 없습니다.");
 		});
@@ -72,6 +74,8 @@ public class BoardService {
 		String content=replySaveDto.getContent();
 		Reply reply = new Reply(user,board,content);
 		replyRepository.save(reply);
+		*/
+		replyRepository.createReply(replySaveDto.getUserId(), replySaveDto.getBoardId(), replySaveDto.getContent());
 	}
 	
 //	@Transactional(readOnly = true) // Select할 때 트랜잭션 시작, 서비스 종료시에 트랜잭션 종료 (정합성)
