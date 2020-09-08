@@ -13,6 +13,6 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(value=Exception.class)
 	public ResponseDto<String> handleException(Exception e) {
-		return new ResponseDto<String>(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage());
+		return new ResponseDto<String>(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage()); // INTERNAL_SERVER_ERROR == 500번 에러
 	}
 }
