@@ -3,6 +3,7 @@ package com.vividswan.blog.model;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -45,7 +46,7 @@ public class Board {
 	
 	private int count; // 조회수
 	
-	@OneToMany(mappedBy = "board", fetch = FetchType.EAGER) // mappedBy-> 연관관계의 주인이 아니므로, DB에 FK키를 만들지 말라는 의미, EAGER 전략 -> 무조건 가져오기
+	@OneToMany(mappedBy = "board", fetch = FetchType.EAGER, cascade =  CascadeType.REMOVE) // mappedBy-> 연관관계의 주인이 아니므로, DB에 FK키를 만들지 말라는 의미, EAGER 전략 -> 무조건 가져오기
 	@JsonIgnoreProperties({"board"})
 	@OrderBy("id desc")
 	private List<Reply> replys;
